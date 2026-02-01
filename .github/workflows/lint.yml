@@ -23,4 +23,8 @@ jobs:
         with:
           components: clippy
       - name: Run Clippy
-        run: cargo clippy -- -D warnings
+        run: |
+          cd contracts/shared && cargo clippy -- -D warnings
+          cd ../prize-pool && cargo clippy -- -D warnings
+          cd ../random-generator && cargo clippy -- -D warnings
+          cd ../coin-flip && cargo clippy -- -D warnings

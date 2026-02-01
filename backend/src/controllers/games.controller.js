@@ -2,7 +2,7 @@
  * Controller for managing all game-related API requests.
  */
 const logger = require('../utils/logger');
-const gameService = require('../services/game.service'); // Note: I have game.service.js, need to check if user wanted plural
+const _gameService = require('../services/game.service');
 
 const getGames = async (req, res, next) => {
   try {
@@ -15,7 +15,7 @@ const getGames = async (req, res, next) => {
 
 const playSimpleGame = async (req, res, next) => {
   try {
-    const { gameType, amount, choice } = req.body;
+    const { gameType, _amount, _choice } = req.body;
     logger.info(`User ${req.user.id} playing ${gameType}`);
     // TODO: Logic
     res.status(200).json({ success: true });

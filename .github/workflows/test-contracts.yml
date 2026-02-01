@@ -26,11 +26,16 @@ jobs:
             target
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.toml') }}
 
-      - name: Install Soroban CLI
-        run: cargo install --locked soroban-cli
-
       - name: Build Contracts
-        run: cargo build --target wasm32-unknown-unknown --release
+        run: |
+          cd contracts/shared && cargo build --release
+          cd ../prize-pool && cargo build --target wasm32-unknown-unknown --release
+          cd ../random-generator && cargo build --target wasm32-unknown-unknown --release
+          cd ../coin-flip && cargo build --target wasm32-unknown-unknown --release
 
       - name: Run Tests
-        run: cargo test
+        run: |
+          cd contracts/shared && cargo test
+          cd ../prize-pool && cargo test
+          cd ../random-generator && cargo test
+          cd ../coin-flip && cargo test

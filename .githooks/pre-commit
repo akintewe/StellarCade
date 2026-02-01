@@ -25,8 +25,8 @@ fi
 echo "📦 Formatting and linting backend..."
 if command -v npm >/dev/null 2>&1; then
     cd backend
-    npm run format >/dev/null 2>&1 || echo "⚠️ Prettier failed to fix some issues automatically."
-    npm run lint -- --fix || echo "⚠️ ESLint could not fix everything, please check manually."
+    npm run format >/dev/null 2>&1
+    npm run lint -- --fix
     cd ..
 else
     echo "⚠️ NPM not found, skipping backend checks."

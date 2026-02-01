@@ -2,7 +2,7 @@
  * Controller for managing user-specific operations.
  */
 const logger = require('../utils/logger');
-const User = require('../models/User.model');
+const _User = require('../models/User.model');
 
 const getProfile = async (req, res, next) => {
   try {

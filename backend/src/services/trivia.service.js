@@ -3,7 +3,7 @@
  */
 const logger = require('../utils/logger');
 
-const submitTriviaAnswers = async (userId, answers) => {
+const submitTriviaAnswers = async (userId, _answers) => {
   logger.info(`Submitting trivia for user ${userId}`);
   // TODO: Validate answers
   // TODO: Score the round

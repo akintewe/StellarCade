@@ -1,5 +1,6 @@
 const StellarSdk = require('stellar-sdk');
-const logger = require('./logger');
+const logger = require('./logger'); // Changed _logger to logger as it's used
+const _gameService = require('../services/game.service'); // Added this line
 
 /**
  * Configure Stellar Server instance based on environment.
@@ -18,7 +19,7 @@ const getContractClient = (contractId) => {
   // TODO: Add Soroban client initialization logic when SDK v12+ is integrated
   return {
     contractId,
-    invoke: async (method, args) => {
+    invoke: async (method, _args) => {
       logger.info(`Invoking ${method} on ${contractId}`);
       // Mock result
       return { status: 'pending' };

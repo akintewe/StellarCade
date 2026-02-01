@@ -3,7 +3,7 @@
  */
 const logger = require('../utils/logger');
 
-const errorHandlerMiddleware = (err, req, res, next) => {
+const errorHandlerMiddleware = (err, req, res, _next) => {
   logger.error(`${err.name}: ${err.message}`, { stack: err.stack });
 
   const statusCode = err.statusCode || 500;

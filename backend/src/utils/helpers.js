@@ -1,7 +1,7 @@
 /**
  * Utility helpers for various backend tasks.
  */
-const logger = require('./logger');
+const _logger = require('./logger');
 
 /**
  * Validates a Stellar public key (G... address).

@@ -42,6 +42,7 @@ logs/
 # Testing
 coverage/
 .nyc_output
+test_snapshots/
 
 # OS generated files
 .DS_Store

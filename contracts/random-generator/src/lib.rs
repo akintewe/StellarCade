@@ -30,8 +30,7 @@
 #![allow(unexpected_cfgs)]
 
 use soroban_sdk::{
-    contract, contracterror, contractevent, contractimpl, contracttype, Address, Bytes, BytesN,
-    Env,
+    contract, contracterror, contractevent, contractimpl, contracttype, Address, Bytes, BytesN, Env,
 };
 
 // ---------------------------------------------------------------------------
@@ -51,15 +50,15 @@ pub const PERSISTENT_BUMP_LEDGERS: u32 = 518_400;
 #[repr(u32)]
 pub enum Error {
     AlreadyInitialized = 1,
-    NotInitialized     = 2,
-    NotAuthorized      = 3,
+    NotInitialized = 2,
+    NotAuthorized = 3,
     /// `max < 2` — a range of [0, 0] produces no randomness.
-    InvalidBound       = 4,
+    InvalidBound = 4,
     /// A request with this `request_id` already exists (pending or fulfilled).
     DuplicateRequestId = 5,
-    RequestNotFound    = 6,
+    RequestNotFound = 6,
     /// `fulfill_random` was called a second time for the same `request_id`.
-    AlreadyFulfilled   = 7,
+    AlreadyFulfilled = 7,
     /// The `caller` passed to `request_random` is not in the whitelist.
     UnauthorizedCaller = 8,
 }
@@ -173,9 +172,11 @@ impl RandomGenerator {
 
         let key = DataKey::AuthorizedCaller(caller);
         env.storage().persistent().set(&key, &());
-        env.storage()
-            .persistent()
-            .extend_ttl(&key, PERSISTENT_BUMP_LEDGERS, PERSISTENT_BUMP_LEDGERS);
+        env.storage().persistent().extend_ttl(
+            &key,
+            PERSISTENT_BUMP_LEDGERS,
+            PERSISTENT_BUMP_LEDGERS,
+        );
 
         Ok(())
     }
@@ -225,7 +226,10 @@ impl RandomGenerator {
 
         // Block reuse of any request_id, pending or fulfilled, to prevent
         // a game contract from submitting a duplicate after its first result.
-        if env.storage().persistent().has(&DataKey::PendingRequest(request_id))
+        if env
+            .storage()
+            .persistent()
+            .has(&DataKey::PendingRequest(request_id))
             || env
                 .storage()
                 .persistent()
@@ -234,14 +238,24 @@ impl RandomGenerator {
             return Err(Error::DuplicateRequestId);
         }
 
-        let entry = PendingEntry { caller: caller.clone(), max };
+        let entry = PendingEntry {
+            caller: caller.clone(),
+            max,
+        };
         let key = DataKey::PendingRequest(request_id);
         env.storage().persistent().set(&key, &entry);
-        env.storage()
-            .persistent()
-            .extend_ttl(&key, PERSISTENT_BUMP_LEDGERS, PERSISTENT_BUMP_LEDGERS);
+        env.storage().persistent().extend_ttl(
+            &key,
+            PERSISTENT_BUMP_LEDGERS,
+            PERSISTENT_BUMP_LEDGERS,
+        );
 
-        RandomRequested { request_id, caller, max }.publish(&env);
+        RandomRequested {
+            request_id,
+            caller,
+            max,
+        }
+        .publish(&env);
 
         Ok(())
     }
@@ -296,11 +310,18 @@ impl RandomGenerator {
         };
         let fulfilled_key = DataKey::FulfilledRequest(request_id);
         env.storage().persistent().set(&fulfilled_key, &fulfilled);
-        env.storage()
-            .persistent()
-            .extend_ttl(&fulfilled_key, PERSISTENT_BUMP_LEDGERS, PERSISTENT_BUMP_LEDGERS);
+        env.storage().persistent().extend_ttl(
+            &fulfilled_key,
+            PERSISTENT_BUMP_LEDGERS,
+            PERSISTENT_BUMP_LEDGERS,
+        );
 
-        RandomFulfilled { request_id, result, server_seed }.publish(&env);
+        RandomFulfilled {
+            request_id,
+            result,
+            server_seed,
+        }
+        .publish(&env);
 
         Ok(())
     }
@@ -374,9 +395,14 @@ fn derive_result(env: &Env, server_seed: &BytesN<32>, request_id: u64, max: u64)
     preimage[..32].copy_from_slice(&server_seed.to_array());
     preimage[32..].copy_from_slice(&request_id.to_be_bytes());
 
-    let digest: BytesN<32> = env.crypto().sha256(&Bytes::from_slice(env, &preimage)).into();
+    let digest: BytesN<32> = env
+        .crypto()
+        .sha256(&Bytes::from_slice(env, &preimage))
+        .into();
     let arr = digest.to_array();
-    let raw = u64::from_be_bytes([arr[0], arr[1], arr[2], arr[3], arr[4], arr[5], arr[6], arr[7]]);
+    let raw = u64::from_be_bytes([
+        arr[0], arr[1], arr[2], arr[3], arr[4], arr[5], arr[6], arr[7],
+    ]);
     raw % max
 }
 
@@ -415,8 +441,10 @@ mod test {
         let mut preimage = [0u8; 40];
         preimage[..32].copy_from_slice(&server_seed.to_array());
         preimage[32..].copy_from_slice(&request_id.to_be_bytes());
-        let digest: BytesN<32> =
-            env.crypto().sha256(&Bytes::from_slice(env, &preimage)).into();
+        let digest: BytesN<32> = env
+            .crypto()
+            .sha256(&Bytes::from_slice(env, &preimage))
+            .into();
         let arr = digest.to_array();
         let raw = u64::from_be_bytes([
             arr[0], arr[1], arr[2], arr[3], arr[4], arr[5], arr[6], arr[7],
@@ -576,7 +604,12 @@ mod test {
             client.request_random(&game, &i, &max);
             client.fulfill_random(&oracle, &i, &s);
             let entry = client.get_result(&i);
-            assert!(entry.result < max, "result {} out of range [0, {})", entry.result, max);
+            assert!(
+                entry.result < max,
+                "result {} out of range [0, {})",
+                entry.result,
+                max
+            );
         }
     }
 
@@ -604,7 +637,7 @@ mod test {
         // samples a collision would indicate a broken hash function.
         for i in 0..8 {
             for j in (i + 1)..8 {
-                assert_ne!(results[i], results[j], "collision at indices {} and {}", i, j);
+                assert_ne!(results[i], results[j], "collision at indices {i} and {j}");
             }
         }
     }

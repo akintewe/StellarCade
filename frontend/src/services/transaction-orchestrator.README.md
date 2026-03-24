@@ -4,14 +4,11 @@
 
 ## Responsibilities
 
-- Deterministic lifecycle transitions:
-  - `IDLE -> VALIDATING -> SUBMITTING -> SUBMITTED -> CONFIRMING -> CONFIRMED`
-  - Retry path: `SUBMITTING -> RETRYING -> SUBMITTING`
-  - Failure path: `... -> FAILED`
+- Deterministic lifecycle transitions.
 - Precondition and input validation before side effects.
 - Submission retry policy for retryable failures.
 - Confirmation polling with timeout handling.
-- Correlation IDs for traceability across submit/confirm calls.
+- Correlation IDs for traceability.
 - Duplicate in-flight prevention.
 
 ## Usage
@@ -27,22 +24,12 @@ const result = await orchestrator.execute({
   input: { wager: 100n },
   validatePreconditions: () => null,
   validateInput: () => null,
-  submit: async (_input, ctx) => {
-    console.log(ctx.correlationId);
-    return { txHash: 'abc123', data: { accepted: true } };
-  },
-  confirm: async (_hash) => ({
-    status: ConfirmationStatus.CONFIRMED,
-    confirmations: 1,
-  }),
+  submit: async (_input, ctx) => ({ txHash: `tx-${ctx.correlationId}`, data: { ok: true } }),
+  confirm: async () => ({ status: ConfirmationStatus.CONFIRMED, confirmations: 1 }),
 });
 ```
 
-## Hook Wrapper
-
-Use `useTransactionOrchestrator` to bind service state to React components without coupling the core orchestration logic to UI code.
-
 ## Notes
 
-- `submit` and `confirm` functions are dependency-injected to keep this module reusable and easy to test.
-- Retry decisions are driven by mapped error severity (`retryable` vs terminal).
+- `submit` and `confirm` are dependency-injected for testability.
+- Retry decisions are driven by mapped error severity.

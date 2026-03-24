@@ -68,7 +68,6 @@ fn test_unauthorized_assignment() {
     // This should panic because admin auth is missing.
     client.assign_role(&target, &role);
 }
-
 #[test]
 fn test_bulk_role_assignment() {
     let env = Env::default();
@@ -124,4 +123,3 @@ fn test_unauthorized_bulk_assignment() {
     // This should panic because admin auth is missing.
     client.bulk_assign_role(&assignments);
 }
-

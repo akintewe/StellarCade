@@ -1,5 +1,3 @@
-#![cfg(test)]
-
 use super::*;
 use soroban_sdk::{
     testutils::Address as _,
@@ -86,7 +84,9 @@ fn test_init_rejects_reinit() {
 
     let rng = Address::generate(&env);
     let tok = Address::generate(&env);
-    let result = s.flip_client.try_init(&s.admin, &rng, &tok, &10, &1000, &250);
+    let result = s
+        .flip_client
+        .try_init(&s.admin, &rng, &tok, &10, &1000, &250);
     assert!(result.is_err());
 }
 
@@ -364,7 +364,8 @@ fn derive_rng_result(env: &Env, server_seed: &BytesN<32>, request_id: u64, max: 
         .sha256(&Bytes::from_slice(env, &preimage))
         .into();
     let arr = digest.to_array();
-    let raw =
-        u64::from_be_bytes([arr[0], arr[1], arr[2], arr[3], arr[4], arr[5], arr[6], arr[7]]);
+    let raw = u64::from_be_bytes([
+        arr[0], arr[1], arr[2], arr[3], arr[4], arr[5], arr[6], arr[7],
+    ]);
     raw % max
 }

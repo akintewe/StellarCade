@@ -122,7 +122,5 @@ impl ContractRoleRegistry {
         }
     }
 }
-
-
 #[cfg(test)]
 mod test;

@@ -77,7 +77,7 @@ describe('TransactionOrchestrator', () => {
   });
 
   it('fails fast on precondition failure without calling submit', async () => {
-    const submit = jest.fn(async () => ({ txHash: 'never', data: null }));
+    const submit = vi.fn(async () => ({ txHash: 'never', data: null }));
 
     const orchestrator = new TransactionOrchestrator({
       sleep: async () => {},
@@ -120,7 +120,7 @@ describe('TransactionOrchestrator', () => {
         error: {
           code: 'RPC_TX_REJECTED',
           domain: ErrorDomain.RPC,
-          severity: ErrorSeverity.FATAL,
+          severity: ErrorSeverity.TERMINAL,
           message: 'Transaction was rejected by network.',
         },
       }),
@@ -163,7 +163,7 @@ describe('TransactionOrchestrator', () => {
   it('prevents duplicate in-flight execution', async () => {
     let resolveSubmit: ((v: { txHash: string; data: null }) => void) | null = null;
 
-    const submit = jest.fn(
+    const submit = vi.fn(
       () =>
         new Promise<{ txHash: string; data: null }>((resolve) => {
           resolveSubmit = resolve;

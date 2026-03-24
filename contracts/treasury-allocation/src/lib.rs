@@ -2,7 +2,8 @@
 #![allow(unexpected_cfgs)]
 
 use soroban_sdk::{
-    contract, contracterror, contractevent, contractimpl, contracttype, symbol_short, vec, Address, Env, Symbol,
+    contract, contracterror, contractevent, contractimpl, contracttype, symbol_short, vec,
+    Address, Env, IntoVal, Symbol,
 };
 
 pub const PERSISTENT_BUMP_LEDGERS: u32 = 518_400;
@@ -308,7 +309,7 @@ fn require_admin_as_invoker(env: &Env) -> Result<(), Error> {
 mod test {
     use super::*;
     use soroban_sdk::{
-        testutils::{Address as _, Events as _},
+        testutils::Address as _,
         symbol_short, Address, Env,
     };
 

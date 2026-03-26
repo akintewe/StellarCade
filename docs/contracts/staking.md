@@ -116,7 +116,7 @@ pub fn position_of(env: Env, user: Address) -> UserPosition
 `UserPosition`
 
 ### `preview_rewards`
-Preview the staker's pending rewards at the current ledger without mutating storage. The returned `claimable_now` field is zero while the claim cooldown is active, even though `pending_rewards` continues to accrue deterministically.
+Preview pending rewards and current claimability without mutating state.
 
 ```rust
 pub fn preview_rewards(env: Env, user: Address) -> Result<RewardPreview, Error>
@@ -134,7 +134,7 @@ pub fn preview_rewards(env: Env, user: Address) -> Result<RewardPreview, Error>
 `Result<RewardPreview, Error>`
 
 ### `next_claim`
-Return claim eligibility metadata for UI and backend consumers. Missing staker state resolves deterministically with zero cooldown remaining and an immediately eligible read model.
+Return deterministic next-claim eligibility metadata for a staker.
 
 ```rust
 pub fn next_claim(env: Env, user: Address) -> Result<ClaimEligibility, Error>

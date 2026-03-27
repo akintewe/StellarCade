@@ -42,6 +42,25 @@ pub fn fund(env: Env, from: Address, amount: i128) -> Result<(), Error>
 
 `Result<(), Error>`
 
+### `rotate_admin`
+Rotate prize-pool control to a new admin address. The current admin must authorize the rotation and the new admin must also authorize the handoff so control transfer is deliberate and single-purpose.
+
+```rust
+pub fn rotate_admin(env: Env, admin: Address, new_admin: Address) -> Result<(), Error>
+```
+
+#### Parameters
+
+| Name | Type |
+|------|------|
+| `env` | `Env` |
+| `admin` | `Address` |
+| `new_admin` | `Address` |
+
+#### Return Type
+
+`Result<(), Error>`
+
 ### `reserve`
 Earmark `amount` tokens from the available pool for a specific game.  Moves `amount` from `available` into a `Reservation(game_id)` entry. Calling reserve with a `game_id` that already has a reservation returns `GameAlreadyReserved` — this is the idempotency guard preventing a buggy game contract from double-drawing from the pool.
 
@@ -137,3 +156,28 @@ pub fn get_prize_pool_metrics(env: Env) -> Result<PrizePoolMetrics, Error>
 
 `Result<PrizePoolMetrics, Error>`
 
+### `get_config_snapshot`
+Return a stable configuration snapshot containing the current admin, token address, and basic pool metadata. This accessor is read-only and intended for backend/operator caches.
+
+```rust
+pub fn get_config_snapshot(env: Env) -> Result<PrizePoolConfigSnapshot, Error>
+```
+
+#### Parameters
+
+| Name | Type |
+|------|------|
+| `env` | `Env` |
+
+#### Return Type
+
+`Result<PrizePoolConfigSnapshot, Error>`
+
+## Operations
+
+To rotate control safely:
+
+1. Call `rotate_admin` with the current admin as `admin`.
+2. Supply the replacement operator as `new_admin`.
+3. Ensure both addresses authorize the transaction.
+4. Verify the handoff through `get_config_snapshot` before performing new reserve/release/payout operations.

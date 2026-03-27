@@ -189,3 +189,21 @@ pub fn get_reward_bps(env: Env) -> Result<u32, Error>
 
 `Result<u32, Error>`
 
+### `preview_referral_reward`
+Preview referral reward outcomes for a proposed referral event without mutating storage. The preview mirrors current settlement rules exactly: the referrer receives `amount * reward_bps / 10_000`, the referee currently receives `0`, and the current contract has no configured reward cap so `reward_cap` is `0` and `cap_applied` is `false`.
+
+```rust
+pub fn preview_referral_reward(env: Env, user: Address, amount: i128) -> Result<ReferralRewardPreview, Error>
+```
+
+#### Parameters
+
+| Name | Type |
+|------|------|
+| `env` | `Env` |
+| `user` | `Address` |
+| `amount` | `i128` |
+
+#### Return Type
+
+`Result<ReferralRewardPreview, Error>`

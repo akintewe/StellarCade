@@ -84,3 +84,39 @@ pub fn history(env: Env, contract_id: Address) -> Vec<HealthReport>
 
 `Vec<HealthReport>`
 
+### `heartbeat_freshness`
+Return a compact freshness snapshot for a contract heartbeat relative to the current ledger timestamp. If the contract has never reported health, the accessor returns `has_heartbeat = false`, `status = Unknown`, and `is_stale = false`.
+
+```rust
+pub fn heartbeat_freshness(env: Env, contract_id: Address, stale_after_seconds: u64) -> HeartbeatFreshness
+```
+
+#### Parameters
+
+| Name | Type |
+|------|------|
+| `env` | `Env` |
+| `contract_id` | `Address` |
+| `stale_after_seconds` | `u64` |
+
+#### Return Type
+
+`HeartbeatFreshness`
+
+### `stale_contracts`
+Return tracked contracts whose latest heartbeat is older than `stale_after_seconds`. Contracts with no heartbeat are excluded from the stale set, so an empty list is the expected empty-state response.
+
+```rust
+pub fn stale_contracts(env: Env, stale_after_seconds: u64) -> Vec<Address>
+```
+
+#### Parameters
+
+| Name | Type |
+|------|------|
+| `env` | `Env` |
+| `stale_after_seconds` | `u64` |
+
+#### Return Type
+
+`Vec<Address>`

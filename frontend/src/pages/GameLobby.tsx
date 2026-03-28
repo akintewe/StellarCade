@@ -56,40 +56,48 @@ export const GameLobby: React.FC = () => {
 
   return (
     <div className="game-lobby">
-      <NetworkGuardBanner
-        network={wallet.network}
-        normalizedNetwork={networkSupport.normalizedActual}
-        supportedNetworks={networkSupport.supportedNetworks}
-        isSupported={!networkMismatch}
-        onSwitchNetwork={recoverNetwork}
-        onRetryNetworkCheck={retryNetworkCheck}
-        actionLabel="Recover Network"
-        retryLabel="Retry Check"
-        dismissible={false}
-        show={networkMismatch}
-      />
+      <div className="lobby-dashboard">
+        <div className="lobby-dashboard__col">
+          <NetworkGuardBanner
+            network={wallet.network}
+            normalizedNetwork={networkSupport.normalizedActual}
+            supportedNetworks={networkSupport.supportedNetworks}
+            isSupported={!networkMismatch}
+            onSwitchNetwork={recoverNetwork}
+            onRetryNetworkCheck={retryNetworkCheck}
+            actionLabel="Recover Network"
+            retryLabel="Retry Check"
+            dismissible={false}
+            show={networkMismatch}
+          />
 
-      <WalletStatusCard
-        status={wallet.status}
-        address={wallet.address}
-        network={wallet.network}
-        provider={wallet.provider}
-        capabilities={wallet.capabilities}
-        error={wallet.error}
-        onConnect={() => wallet.connect()}
-        onDisconnect={wallet.disconnect}
-        onRetry={wallet.refresh}
-        networkMismatch={networkMismatch}
-        networkRecoveryPending={networkCheckPending}
-        onRecoverNetwork={recoverNetwork}
-        networkRecoveryLabel="Recover Network"
-      />
+          <WalletStatusCard
+            status={wallet.status}
+            address={wallet.address}
+            network={wallet.network}
+            provider={wallet.provider}
+            capabilities={wallet.capabilities}
+            error={wallet.error}
+            onConnect={() => wallet.connect()}
+            onDisconnect={wallet.disconnect}
+            onRetry={wallet.refresh}
+            networkMismatch={networkMismatch}
+            networkRecoveryPending={networkCheckPending}
+            onRecoverNetwork={recoverNetwork}
+            networkRecoveryLabel="Recover Network"
+            lastUpdatedAt={wallet.lastUpdatedAt}
+            isRefreshing={wallet.isRefreshing}
+          />
+        </div>
 
-      <div className="lobby-header">
-        <h2>Live Arena</h2>
-        <p>Real-time game status across the Stellar ecosystem.</p>
+        <div className="lobby-dashboard__col">
+          <div className="lobby-header">
+            <h2>Live Arena</h2>
+            <p>Real-time game status across the Stellar ecosystem.</p>
+          </div>
+        </div>
       </div>
-      
+
       {games.length === 0 ? (
         <div className="lobby-empty">
           <div className="empty-icon">📭</div>
@@ -98,7 +106,7 @@ export const GameLobby: React.FC = () => {
       ) : (
         <div className="games-grid">
           {games.map((game) => (
-            <StatusCard 
+            <StatusCard
               key={game.id}
               id={game.id}
               name={game.name}

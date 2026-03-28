@@ -32,6 +32,19 @@ function truncateAddress(address: string): string {
 }
 
 /**
+ * Formats a timestamp into a human-readable "Updated X ago" string.
+ */
+function formatLastUpdated(ts: number): string {
+  const diffMs = Date.now() - ts;
+  const diffSec = Math.floor(diffMs / 1000);
+  if (diffSec < 60) return 'Updated just now';
+  const diffMin = Math.floor(diffSec / 60);
+  if (diffMin < 60) return `Updated ${diffMin}m ago`;
+  const diffHr = Math.floor(diffMin / 60);
+  return `Updated ${diffHr}h ago`;
+}
+
+/**
  * Sanitizes a string by stripping HTML tags.
  * Guards against prop-injected markup.
  */
@@ -346,6 +359,8 @@ export const WalletStatusCard: React.FC<WalletStatusCardProps> = ({
   onReconnect,
   reconnectPending = false,
   reconnectLabel,
+  lastUpdatedAt = null,
+  isRefreshing = false,
   className,
   testId = 'wallet-status-card',
 }) => {
@@ -388,6 +403,30 @@ export const WalletStatusCard: React.FC<WalletStatusCardProps> = ({
           </div>
         )}
       </div>
+
+      {/* ── Freshness row: last-updated + refresh indicator ── */}
+      {(lastUpdatedAt !== null || isRefreshing) && (
+        <div className="wallet-status-card__freshness" data-testid="wallet-freshness">
+          {isRefreshing ? (
+            <span
+              className="wallet-status-card__refresh-spinner"
+              aria-label="Refreshing balance"
+              data-testid="wallet-refresh-spinner"
+              role="status"
+            />
+          ) : (
+            lastUpdatedAt !== null && (
+              <span
+                className="wallet-status-card__last-updated"
+                data-testid="wallet-last-updated"
+                title={new Date(lastUpdatedAt).toLocaleString()}
+              >
+                {formatLastUpdated(lastUpdatedAt)}
+              </span>
+            )
+          )}
+        </div>
+      )}
 
       {/* ── Body: address + network ── */}
       <div className="wallet-status-card__body">

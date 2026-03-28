@@ -12,6 +12,8 @@ export interface ContractActionButtonProps<T = unknown> {
   walletConnected: boolean;
   networkSupported: boolean;
   disabled?: boolean;
+  /** Optional reason shown near the button when it is disabled by the caller. */
+  disabledReason?: string;
   onSuccess?: (result: T) => void | Promise<void>;
   onError?: (error: AppError) => void | Promise<void>;
   className?: string;
@@ -25,6 +27,7 @@ export function ContractActionButton<T = unknown>({
   walletConnected,
   networkSupported,
   disabled = false,
+  disabledReason,
   onSuccess,
   onError,
   className = '',
@@ -71,8 +74,9 @@ export function ContractActionButton<T = unknown>({
 
   const isDisabled = disabled || isPendingSubmit || blockedReason !== null;
   const preconditionId = blockedReason ? `${testId}-precondition` : undefined;
+  const callerReasonId = (!blockedReason && disabled && disabledReason) ? `${testId}-disabled-reason` : undefined;
   const errorId = error ? `${testId}-error-region` : undefined;
-  const describedBy = [preconditionId, errorId].filter(Boolean).join(' ') || undefined;
+  const describedBy = [preconditionId, callerReasonId, errorId].filter(Boolean).join(' ') || undefined;
 
   const handleClick = async () => {
     if (isDisabled) return;
@@ -106,6 +110,18 @@ export function ContractActionButton<T = unknown>({
           aria-live="polite"
         >
           {blockedReason}
+        </p>
+      )}
+
+      {!blockedReason && disabled && disabledReason && (
+        <p
+          data-testid={callerReasonId}
+          id={callerReasonId}
+          className="contract-action-button__disabled-reason"
+          role="status"
+          aria-live="polite"
+        >
+          {disabledReason}
         </p>
       )}
 

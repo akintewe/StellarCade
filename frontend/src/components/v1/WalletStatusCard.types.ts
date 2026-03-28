@@ -204,4 +204,17 @@ export interface WalletStatusCardProps extends WalletStatusCardCallbacks {
    * @default 'Reconnect'
    */
   reconnectLabel?: string;
+
+  /**
+   * Timestamp (ms since epoch) of the last successful balance/session refresh.
+   * When provided, a human-readable "Updated X ago" label is shown.
+   */
+  lastUpdatedAt?: number | null;
+
+  /**
+   * When true, renders a spinner to indicate a manual refresh is in progress.
+   * Kept distinct from the skeleton `isLoading` state.
+   * @default false
+   */
+  isRefreshing?: boolean;
 }

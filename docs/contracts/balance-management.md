@@ -46,7 +46,7 @@ pub fn get_balance(env: Env, user: Address) -> i128
 
 #### Behavior
 
-- Returns `0` when no account state exists yet for `user`.
+- Returns `0` - when no account state exists yet for `user`.
 
 ### `get_account_summary`
 Return a compact, deterministic account snapshot for backend consumers.

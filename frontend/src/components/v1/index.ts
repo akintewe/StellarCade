@@ -142,3 +142,5 @@ export {
   default as QuestWorkspaceHeaderDefault,
 } from "./QuestWorkspaceHeader";
 export type { QuestWorkspaceHeaderProps } from "../../types/v1/quest";
+export { Timeline, default as TimelineDefault } from "./Timeline";
+export type { TimelineProps, TimelineItemData, TimelineItemStatus } from "./Timeline";

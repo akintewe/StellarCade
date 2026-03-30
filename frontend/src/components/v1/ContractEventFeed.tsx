@@ -10,6 +10,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useContractEvents } from '../../hooks/v1/useContractEvents';
 import { ErrorNotice } from './ErrorNotice';
 import { EmptyStateBlock } from './EmptyStateBlock';
+import type { TimelineItemData } from './Timeline';
 import { toAppError } from '../../utils/v1/errorMapper';
 import {
   generateIdempotencyKey,
@@ -57,6 +58,30 @@ const DEFAULT_LIST_HEIGHT_PX = 480;
 const DEFAULT_VIRTUALIZATION_THRESHOLD = 120;
 const DEFAULT_VIRTUAL_ITEM_HEIGHT_PX = 42;
 const DEFAULT_VIRTUAL_OVERSCAN = 6;
+
+/**
+ * Maps a ContractEvent to a TimelineItemData so callers can compose event
+ * history into any surface that accepts the shared Timeline API (e.g. audit
+ * views, transaction history panels).
+ */
+export function eventToTimelineItem(event: ContractEvent): TimelineItemData {
+  const timestamp = new Date(event.timestamp);
+  const timeLabel = Number.isNaN(timestamp.getTime())
+    ? undefined
+    : timestamp.toLocaleTimeString(undefined, {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+      });
+
+  return {
+    id: event.id,
+    label: event.type ?? 'unknown',
+    status: 'idle',
+    timestamp: timeLabel ?? null,
+    metadata: event.contractId ? event.contractId.slice(0, 10) : null,
+  };
+}
 
 export function getEventSeverity(
   eventType: string | undefined,
@@ -785,7 +810,7 @@ export const ContractEventFeed: React.FC<ContractEventFeedProps> = ({
           </span>
           <ol
             ref={listRef}
-            className={`cef__event-list${shouldVirtualize ? ' cef__event-list--virtualized' : ''}`}
+            className={`cef__event-list sc-timeline sc-timeline--vertical${shouldVirtualize ? ' cef__event-list--virtualized' : ''}`}
             aria-label={`${renderedEvents.length} contract events`}
             data-testid={`${testId}-list`}
             data-virtualized={shouldVirtualize ? 'true' : 'false'}

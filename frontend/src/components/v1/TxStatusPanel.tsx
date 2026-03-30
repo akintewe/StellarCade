@@ -2,6 +2,8 @@ import React, { useState, useCallback } from 'react';
 import { TxPhase, TxStatusMeta, TxStatusError } from '../../types/tx-status';
 import { EnvironmentBadge } from './EnvironmentBadge';
 import { formatAddress, formatDate, formatTxTimestamp, truncateHash } from '../../utils/v1/formatters';
+import { Timeline } from './Timeline';
+import type { TimelineItemData, TimelineItemStatus } from './Timeline';
 import './TxStatusPanel.css';
 
 /**
@@ -194,31 +196,42 @@ export const TxStatusPanel: React.FC<TxStatusPanelProps> = ({
         className
     ].join(' ');
 
-    const renderStep = (label: string, activePhase: TxPhase | TxPhase[], stepIndex: number) => {
-        const phases = Array.isArray(activePhase) ? activePhase : [activePhase];
-        const isActive = phases.includes(phase);
+    const currentStepIndex =
+      phase === TxPhase.IDLE ? 0 :
+      phase === TxPhase.SUBMITTED ? 1 :
+      phase === TxPhase.PENDING ? 2 :
+      phase === TxPhase.CONFIRMED ? 3 :
+      isFailed ? 2 : 0;
 
-        // Logic for completion: if we are past this phase in the happy path
-        // SUBMITTED (1) -> PENDING (2) -> CONFIRMED (3)
-        const currentStepIndex = phase === TxPhase.IDLE ? 0 :
-            phase === TxPhase.SUBMITTED ? 1 :
-                phase === TxPhase.PENDING ? 2 :
-                    phase === TxPhase.CONFIRMED ? 3 :
-                        isFailed ? 2 : 0; // If failed during pending, we mark up to submitted
-
-        const isCompleted = stepIndex < currentStepIndex && !isFailed;
-        const isError = isFailed && stepIndex === currentStepIndex;
-
-        return (
-            <div
-                className={`tx-status-step ${isActive ? 'tx-status-step--active' : ''} ${isCompleted ? 'tx-status-step--completed' : ''} ${isError ? 'tx-status-step--error' : ''}`}
-                key={label}
-            >
-                <div className={`tx-status-step__dot ${isActive && isPending ? 'pulse-animation' : ''}`} />
-                <span className="tx-status-step__label">{label}</span>
-            </div>
-        );
+    const resolveStepStatus = (stepIndex: number): TimelineItemStatus => {
+      if (isFailed && stepIndex === currentStepIndex) return 'error';
+      if (stepIndex < currentStepIndex && !isFailed) return 'completed';
+      if (
+        (phase === TxPhase.SUBMITTED && stepIndex === 1) ||
+        (phase === TxPhase.PENDING && stepIndex === 2)
+      ) return 'active';
+      return 'idle';
     };
+
+    const txTimelineItems: TimelineItemData[] = [
+      {
+        id: 'submitted',
+        label: 'Submitted',
+        status: resolveStepStatus(1),
+        timestamp: meta?.submittedAt ? formatDate(meta.submittedAt, { timeStyle: 'short' }) : null,
+      },
+      {
+        id: 'pending',
+        label: 'Pending',
+        status: resolveStepStatus(2),
+      },
+      {
+        id: 'confirmed',
+        label: 'Confirmed',
+        status: resolveStepStatus(3),
+        timestamp: meta?.settledAt ? formatDate(meta.settledAt, { timeStyle: 'short' }) : null,
+      },
+    ];
 
     const badgeClass = `tx-status-panel__badge tx-status-panel__badge--${phase.toLowerCase()}`;
 
@@ -238,9 +251,12 @@ export const TxStatusPanel: React.FC<TxStatusPanelProps> = ({
 
             {!isIdle && (
                 <div className="tx-status-panel__timeline" data-testid={`${testId}-timeline`}>
-                    {renderStep('Submitted', TxPhase.SUBMITTED, 1)}
-                    {renderStep('Pending', TxPhase.PENDING, 2)}
-                    {renderStep('Confirmed', TxPhase.CONFIRMED, 3)}
+                  <Timeline
+                    items={txTimelineItems}
+                    orientation="horizontal"
+                    compact={compact}
+                    testId={`${testId}-steps`}
+                  />
                 </div>
             )}
 

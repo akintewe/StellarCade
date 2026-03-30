@@ -22,6 +22,13 @@ const EVENT_FEED_FILTER_KEY_PREFIX = "stc_feed_filter_v1";
 const FILTER_PRESET_STORAGE_KEY = "stc_feed_filter_presets_v1";
 const FILTER_PRESET_VERSION = 1;
 
+/**
+ * Flag key used to track whether the first-time onboarding checklist has been
+ * dismissed. Stored in the `flags` map so it persists across page reloads via
+ * localStorage. Dispatch `FLAGS_SET` with this key and `value: true` to dismiss.
+ */
+export const ONBOARDING_CHECKLIST_DISMISSED_FLAG = "onboarding_checklist_dismissed";
+
 export interface BannerDismissalEntry {
   identity: string;
   dismissedAt: number;

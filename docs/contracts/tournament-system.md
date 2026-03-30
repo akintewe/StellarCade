@@ -1,5 +1,16 @@
 # tournament-system
 
+Tournament consumers benefit from a direct view of remaining match counts and
+each participant's elimination-path context without reconstructing the full
+bracket off-chain.
+
+## Missing-entity behavior
+
+- `remaining_match_count` returns `Err(TournamentNotFound)` when the tournament
+  does not exist.
+- `elimination_path` returns `Err(TournamentNotFound)` when the tournament does
+  not exist, and `Err(PlayerNotJoined)` when the participant never joined.
+
 ## Public Methods
 
 ### `init`
@@ -201,3 +212,52 @@ pub fn advance_round(env: Env, admin: Address, id: u64) -> Result<(), Error>
 
 `Result<(), Error>`
 
+
+### `remaining_match_count`
+Returns the number of matches remaining in the current round.
+Each match pairs two participants; an odd participant receives a bye and counts
+as one match (ceiling division). This accessor is deterministic and does not
+require the caller to reconstruct the bracket.
+
+```rust
+pub fn remaining_match_count(env: Env, id: u64) -> Result<u32, Error>
+```
+
+#### Parameters
+
+| Name | Type |
+|------|------|
+| `env` | `Env` |
+| `id` | `u64` |
+
+#### Return Type
+
+`Result<u32, Error>` — count of matches, or `Err(TournamentNotFound)`
+
+### `elimination_path`
+Returns a compact summary of a participant's journey through the bracket.
+Walks every round from 1 to the current round, checking whether the participant
+appeared in `RoundParticipants` for each. The result is UI-friendly and does
+not require reconstructing the full bracket off-chain.
+
+```rust
+pub fn elimination_path(env: Env, id: u64, player: Address) -> Result<EliminationPath, Error>
+```
+
+#### Parameters
+
+| Name | Type |
+|------|------|
+| `env` | `Env` |
+| `id` | `u64` |
+| `player` | `Address` |
+
+#### Return Type
+
+`Result<EliminationPath, Error>`
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `rounds_played` | `u32` | Total rounds the participant appeared in |
+| `last_round_active` | `u32` | Highest round the participant was still active |
+| `is_active` | `bool` | `true` when participant is in the current round |

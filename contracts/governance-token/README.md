@@ -28,6 +28,9 @@ Returns the most recent voting checkpoint for `holder`, or `None` if the holder 
 ### `checkpoint_history(holder: Address, limit: u32) -> Vec<Checkpoint>`
 Returns up to `limit` most-recent checkpoints for `holder`, ordered oldest-first. `limit` is capped at 50. Returns an empty list for unknown holders.
 
+### `checkpoint_at_ledger(holder: Address, ledger: u32) -> Option<Checkpoint>`
+Returns the most recent checkpoint at or before `ledger` for `holder`. Intended for snapshot-based vote weighting — pass a proposal's `start_ledger` to get the holder's balance at that point in time. Returns `None` for unknown holders or if no checkpoint precedes the requested ledger.
+
 ## Checkpoint Behavior
 
 - A `Checkpoint { ledger, balance }` is written whenever a holder's balance changes (mint, burn, or transfer).
@@ -41,7 +44,7 @@ Returns up to `limit` most-recent checkpoints for `holder`, ordered oldest-first
 - `Admin`: The address with administrative privileges.
 - `TotalSupply`: Current total number of tokens in circulation.
 - `Balances`: Mapping of addresses to their respective token balances.
-- `Checkpoints`: Per-holder ordered list of `Checkpoint` entries (bounded to 50).
+- `Checkpoints(Address)`: Per-holder ordered list of `Checkpoint` entries (bounded to 50).
 
 ## Events
 

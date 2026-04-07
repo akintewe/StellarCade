@@ -194,6 +194,25 @@ pub fn checkpoint_history(env: Env, holder: Address, limit: u32) -> Vec<Checkpoi
 
 `Vec<Checkpoint>`
 
+### `checkpoint_at_ledger`
+Returns the most recent checkpoint at or before `ledger` for `holder`. Intended for snapshot-based vote weighting — pass a proposal's `start_ledger` to get the holder's balance at that point in time. Returns `None` for unknown holders or if no checkpoint precedes the requested ledger.
+
+```rust
+pub fn checkpoint_at_ledger(env: Env, holder: Address, ledger: u32) -> Option<Checkpoint>
+```
+
+#### Parameters
+
+| Name | Type |
+|------|------|
+| `env` | `Env` |
+| `holder` | `Address` |
+| `ledger` | `u32` |
+
+#### Return Type
+
+`Option<Checkpoint>`
+
 ## Checkpoint Type
 
 ```rust

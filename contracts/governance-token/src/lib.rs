@@ -101,11 +101,7 @@ fn write_checkpoint(env: &Env, holder: &Address, new_balance: i128) {
 
     // Evict oldest entry when the cap is reached.
     if history.len() >= MAX_CHECKPOINTS {
-        let mut trimmed: Vec<Checkpoint> = Vec::new(env);
-        for i in 1..history.len() {
-            trimmed.push_back(history.get(i).unwrap());
-        }
-        history = trimmed;
+        history = history.slice(1..history.len());
     }
 
     history.push_back(cp);
@@ -274,6 +270,30 @@ impl GovernanceToken {
         let mut result: Vec<Checkpoint> = Vec::new(&env);
         for i in start..len {
             result.push_back(history.get(i as u32).unwrap());
+        }
+        result
+    }
+
+    /// Returns the most recent checkpoint at or before `ledger` for `holder`.
+    /// Enables snapshot-based vote weighting: callers pass a proposal's
+    /// `start_ledger` to get the holder's balance at that point in time.
+    /// Returns `None` for unknown holders or if no checkpoint precedes `ledger`.
+    pub fn checkpoint_at_ledger(env: Env, holder: Address, ledger: u32) -> Option<Checkpoint> {
+        let history: Vec<Checkpoint> = env
+            .storage()
+            .persistent()
+            .get(&DataKey::Checkpoints(holder))
+            .unwrap_or_else(|| Vec::new(&env));
+
+        // Walk backwards to find the latest checkpoint whose ledger <= requested.
+        let mut result: Option<Checkpoint> = None;
+        for i in 0..history.len() {
+            let cp = history.get(i).unwrap();
+            if cp.ledger <= ledger {
+                result = Some(cp);
+            } else {
+                break;
+            }
         }
         result
     }

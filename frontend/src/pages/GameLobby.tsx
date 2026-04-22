@@ -7,8 +7,67 @@ import WalletStatusCard from '../components/v1/WalletStatusCard';
 import PrizePoolStateCard from '../components/v1/PrizePoolStateCard';
 import { isSupportedNetwork } from '../utils/v1/useNetworkGuard';
 import { useWalletStatus } from '../hooks/v1/useWalletStatus';
-import GlobalStateStore from '../services/global-state-store';
+import GlobalStateStore, { ONBOARDING_CHECKLIST_DISMISSED_FLAG } from '../services/global-state-store';
 import type { PendingTransactionSnapshot } from '../types/global-state';
+
+// ─── Onboarding Checklist ────────────────────────────────────────────────────
+
+const CHECKLIST_ITEMS = [
+  { id: 'connect-wallet', label: 'Connect your Stellar wallet' },
+  { id: 'browse-games', label: 'Browse available games' },
+  { id: 'place-wager', label: 'Place your first wager' },
+] as const;
+
+interface FirstTimeChecklistProps {
+  onDismiss: () => void;
+}
+
+const FirstTimeChecklist: React.FC<FirstTimeChecklistProps> = ({ onDismiss }) => {
+  const [checked, setChecked] = useState<Record<string, boolean>>({});
+
+  const toggle = useCallback((id: string) => {
+    setChecked((prev) => ({ ...prev, [id]: !prev[id] }));
+  }, []);
+
+  return (
+    <aside
+      className="onboarding-checklist"
+      aria-label="Getting started checklist"
+      data-testid="onboarding-checklist"
+    >
+      <div className="onboarding-checklist__header">
+        <h3 className="onboarding-checklist__title">Get Started</h3>
+        <button
+          type="button"
+          className="onboarding-checklist__dismiss"
+          onClick={onDismiss}
+          aria-label="Dismiss checklist"
+          data-testid="onboarding-checklist-dismiss"
+        >
+          ×
+        </button>
+      </div>
+      <ul className="onboarding-checklist__list">
+        {CHECKLIST_ITEMS.map((item) => (
+          <li key={item.id} className="onboarding-checklist__item">
+            <label className="onboarding-checklist__label">
+              <input
+                type="checkbox"
+                className="onboarding-checklist__checkbox"
+                checked={!!checked[item.id]}
+                onChange={() => toggle(item.id)}
+                data-testid={`checklist-item-${item.id}`}
+              />
+              <span className={checked[item.id] ? 'onboarding-checklist__text--done' : ''}>
+                {item.label}
+              </span>
+            </label>
+          </li>
+        ))}
+      </ul>
+    </aside>
+  );
+};
 
 function formatCompactAddress(address: string | null): string {
   if (!address) {
@@ -39,6 +98,18 @@ export const GameLobby: React.FC = () => {
   if (!globalStoreRef.current) {
     globalStoreRef.current = new GlobalStateStore();
   }
+
+  const [checklistDismissed, setChecklistDismissed] = useState<boolean>(
+    () => !!globalStoreRef.current?.selectFlag(ONBOARDING_CHECKLIST_DISMISSED_FLAG),
+  );
+
+  const handleDismissChecklist = useCallback(() => {
+    globalStoreRef.current?.dispatch({
+      type: 'FLAGS_SET',
+      payload: { key: ONBOARDING_CHECKLIST_DISMISSED_FLAG, value: true },
+    });
+    setChecklistDismissed(true);
+  }, []);
 
   const networkSupport = useMemo(
     () => isSupportedNetwork(wallet.network, { supportedNetworks: ['TESTNET', 'PUBLIC'] }),
@@ -209,6 +280,10 @@ export const GameLobby: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {!checklistDismissed && (
+        <FirstTimeChecklist onDismiss={handleDismissChecklist} />
+      )}
 
       <section aria-labelledby="games-heading" className="games-section">
         {games.length === 0 ? (

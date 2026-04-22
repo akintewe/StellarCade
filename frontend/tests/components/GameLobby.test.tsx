@@ -1,7 +1,8 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { expect, test, vi, describe, it, beforeEach } from 'vitest';
 import GameLobby from '../../src/pages/GameLobby';
 import { ApiClient } from '../../src/services/typed-api-sdk';
+import { ONBOARDING_CHECKLIST_DISMISSED_FLAG } from '../../src/services/global-state-store';
 
 vi.mock('../../src/services/typed-api-sdk');
 vi.mock('../../src/hooks/v1/useWalletStatus', () => ({
@@ -168,6 +169,96 @@ describe('GameLobby two-column layout', () => {
       expect(screen.getByText(/No wallet connected/i)).toBeInTheDocument();
       expect(screen.getByText(/Waiting for the next wallet action/i)).toBeInTheDocument();
       expect(screen.getByTestId('lobby-prize-pool-kpi-empty')).toBeInTheDocument();
+    });
+  });
+});
+
+describe('GameLobby - first-time onboarding checklist', () => {
+  it('renders the checklist for a first-time user (no dismissed flag)', async () => {
+    (ApiClient as any).prototype.getGames.mockResolvedValue({ success: true, data: [] });
+
+    render(<GameLobby />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('onboarding-checklist')).toBeInTheDocument();
+    });
+  });
+
+  it('does not render the checklist when the dismissed flag is set in localStorage', async () => {
+    const state = {
+      auth: { isAuthenticated: false },
+      flags: { [ONBOARDING_CHECKLIST_DISMISSED_FLAG]: true },
+      storedAt: Date.now(),
+    };
+    localStorage.setItem('stc_global_state_v1', JSON.stringify(state));
+    (ApiClient as any).prototype.getGames.mockResolvedValue({ success: true, data: [] });
+
+    render(<GameLobby />);
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('onboarding-checklist')).not.toBeInTheDocument();
+    });
+  });
+
+  it('hides the checklist and persists the dismissal when dismiss button is clicked', async () => {
+    (ApiClient as any).prototype.getGames.mockResolvedValue({ success: true, data: [] });
+
+    render(<GameLobby />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('onboarding-checklist')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByTestId('onboarding-checklist-dismiss'));
+
+    expect(screen.queryByTestId('onboarding-checklist')).not.toBeInTheDocument();
+
+    // Flag must be written to localStorage so a page reload keeps it dismissed
+    const stored = JSON.parse(localStorage.getItem('stc_global_state_v1') ?? '{}');
+    expect(stored.flags?.[ONBOARDING_CHECKLIST_DISMISSED_FLAG]).toBe(true);
+  });
+
+  it('checklist items can be toggled independently', async () => {
+    (ApiClient as any).prototype.getGames.mockResolvedValue({ success: true, data: [] });
+
+    render(<GameLobby />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('checklist-item-connect-wallet')).toBeInTheDocument();
+    });
+
+    const checkbox = screen.getByTestId('checklist-item-connect-wallet') as HTMLInputElement;
+    expect(checkbox.checked).toBe(false);
+    fireEvent.click(checkbox);
+    expect(checkbox.checked).toBe(true);
+  });
+
+  it('checklist has accessible aria-label', async () => {
+    (ApiClient as any).prototype.getGames.mockResolvedValue({ success: true, data: [] });
+
+    render(<GameLobby />);
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('complementary', { name: /getting started checklist/i }),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('returning user: checklist absent when dismissal is persisted', async () => {
+    const state = {
+      auth: { isAuthenticated: false },
+      flags: { [ONBOARDING_CHECKLIST_DISMISSED_FLAG]: true },
+      storedAt: Date.now(),
+    };
+    localStorage.setItem('stc_global_state_v1', JSON.stringify(state));
+    (ApiClient as any).prototype.getGames.mockResolvedValue({ success: true, data: [] });
+
+    render(<GameLobby />);
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('lobby-kpi-strip')).toBeInTheDocument();
+      expect(screen.queryByTestId('onboarding-checklist')).not.toBeInTheDocument();
     });
   });
 });

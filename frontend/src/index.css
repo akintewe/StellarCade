@@ -521,6 +521,7 @@ nav a.active {
   font-size: 3rem;
   margin-bottom: 1rem;
 }
+
 /* Breadcrumb Navigation Container */
 .breadcrumb-nav {
   padding: 1rem 1.5rem;
@@ -857,6 +858,230 @@ nav a.active {
 .breadcrumb-nav:only-child,
 .breadcrumb-nav ol:empty {
   display: none;
+}
+
+/* ─── Shared Timeline Component (sc-timeline) ───────────────────────────────
+ * Used by TxStatusPanel (horizontal step view) and ContractEventFeed
+ * (vertical history view). Add sc-timeline--horizontal or
+ * sc-timeline--vertical to select the layout.
+ * ─────────────────────────────────────────────────────────────────────────── */
+
+.sc-timeline {
+  --sc-tl-dot-size: 10px;
+  --sc-tl-dot-color: rgba(255, 255, 255, 0.2);
+  --sc-tl-dot-active: var(--accent, #00ffcc);
+  --sc-tl-dot-completed: #22c55e;
+  --sc-tl-dot-error: #f87171;
+  --sc-tl-connector: rgba(255, 255, 255, 0.1);
+  --sc-tl-text: rgba(255, 255, 255, 0.55);
+  --sc-tl-text-active: #ffffff;
+
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Horizontal layout (step progress) ── */
+.sc-timeline--horizontal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  padding: 0.75rem 0;
+}
+
+.sc-timeline--horizontal::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--sc-tl-connector);
+  transform: translateY(-50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.sc-timeline--horizontal .sc-timeline__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  flex: 1;
+  z-index: 1;
+}
+
+/* ── Vertical layout (chronological history) ── */
+.sc-timeline--vertical {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.sc-timeline--vertical .sc-timeline__item {
+  display: grid;
+  grid-template-columns: var(--sc-tl-dot-size) 1fr auto;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0;
+  position: relative;
+}
+
+.sc-timeline--vertical .sc-timeline__item + .sc-timeline__item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: calc(var(--sc-tl-dot-size) / 2);
+  width: 1px;
+  height: 100%;
+  background: var(--sc-tl-connector);
+  transform: translateY(-50%);
+  z-index: 0;
+}
+
+/* ── Dot ── */
+.sc-timeline__dot {
+  width: var(--sc-tl-dot-size);
+  height: var(--sc-tl-dot-size);
+  border-radius: 50%;
+  background: var(--sc-tl-dot-color);
+  border: 2px solid var(--sc-tl-dot-color);
+  flex-shrink: 0;
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sc-timeline__item--active .sc-timeline__dot {
+  background: var(--sc-tl-dot-active);
+  border-color: var(--sc-tl-dot-active);
+  box-shadow: 0 0 8px var(--sc-tl-dot-active);
+}
+
+.sc-timeline__item--completed .sc-timeline__dot {
+  background: var(--sc-tl-dot-completed);
+  border-color: var(--sc-tl-dot-completed);
+}
+
+.sc-timeline__item--error .sc-timeline__dot {
+  background: var(--sc-tl-dot-error);
+  border-color: var(--sc-tl-dot-error);
+}
+
+/* ── Label ── */
+.sc-timeline__label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--sc-tl-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sc-timeline__item--active .sc-timeline__label,
+.sc-timeline__item--completed .sc-timeline__label {
+  color: var(--sc-tl-text-active);
+}
+
+/* ── Timestamp & metadata ── */
+.sc-timeline__timestamp,
+.sc-timeline__metadata {
+  font-size: 0.65rem;
+  color: var(--sc-tl-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Compact modifier ── */
+.sc-timeline--compact {
+  --sc-tl-dot-size: 8px;
+}
+
+.sc-timeline--compact .sc-timeline__label {
+  font-size: 0.62rem;
+}
+
+/* ── Onboarding checklist ──────────────────────────────────────────────────── */
+
+.onboarding-checklist {
+  background: var(--bg-card, rgba(255, 255, 255, 0.05));
+  border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.1));
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.onboarding-checklist__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.onboarding-checklist__title {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--accent, #00ffcc);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.onboarding-checklist__dismiss {
+  background: transparent;
+  border: none;
+  color: var(--text-dim, #a0a0a0);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 0.25rem;
+  border-radius: 4px;
+  transition: color 0.15s ease;
+}
+
+.onboarding-checklist__dismiss:hover {
+  color: var(--text-main, #ffffff);
+}
+
+.onboarding-checklist__dismiss:focus-visible {
+  outline: 2px solid var(--accent, #00ffcc);
+  outline-offset: 2px;
+}
+
+.onboarding-checklist__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.onboarding-checklist__item {
+  display: flex;
+  align-items: center;
+}
+
+.onboarding-checklist__label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-main, #ffffff);
+  cursor: pointer;
+}
+
+.onboarding-checklist__checkbox {
+  accent-color: var(--accent, #00ffcc);
+  width: 1rem;
+  height: 1rem;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.onboarding-checklist__text--done {
+  text-decoration: line-through;
+  color: var(--text-dim, #a0a0a0);
 }
 
 @media (max-width: 600px) {

@@ -14,15 +14,24 @@ exports[`ContractEventFeed - snapshot > matches stable header snapshot 1`] = `
     </h2>
     <span
       aria-label="Feed status: Live"
-      aria-live="polite"
-      class="cef-status-badge cef-status-badge--connected"
+      class="status-pill status-pill--success status-pill--compact cef-status-badge cef-status-badge--connected"
       data-testid="contract-event-feed-status"
+      data-tone="success"
+      role="status"
     >
       <span
         aria-hidden="true"
-        class="cef-status-badge__dot"
-      />
-      Live
+        class="status-pill__icon"
+      >
+        <span
+          class="cef-status-badge__dot"
+        />
+      </span>
+      <span
+        class="status-pill__label"
+      >
+        Live
+      </span>
     </span>
   </div>
   <div

@@ -29,6 +29,14 @@ export type WalletBadgeVariant =
   | 'reconnecting'
   | 'error';
 
+export const BADGE_TONE_MAP: Record<WalletBadgeVariant, 'success' | 'pending' | 'warning' | 'error' | 'neutral'> = {
+  connected: 'success',
+  disconnected: 'neutral',
+  connecting: 'pending',
+  reconnecting: 'warning',
+  error: 'error',
+};
+
 /**
  * Maps a WalletStatus string to a WalletBadgeVariant for rendering.
  */

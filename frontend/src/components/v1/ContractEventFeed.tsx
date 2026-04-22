@@ -10,6 +10,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useContractEvents } from '../../hooks/v1/useContractEvents';
 import { ErrorNotice } from './ErrorNotice';
 import { EmptyStateBlock } from './EmptyStateBlock';
+import { StatusPill } from './StatusPill';
 import type { TimelineItemData } from './Timeline';
 import { toAppError } from '../../utils/v1/errorMapper';
 import {
@@ -153,17 +154,23 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ status, testId }) => {
     reconnecting: 'Reconnecting...',
     idle: 'Idle',
   };
+  const tones: Record<ConnectionStatus, 'success' | 'pending' | 'warning' | 'error' | 'neutral'> = {
+    connected: 'success',
+    disconnected: 'error',
+    reconnecting: 'warning',
+    idle: 'neutral',
+  };
 
   return (
-    <span
+    <StatusPill
+      tone={tones[status]}
+      label={labels[status]}
+      size="compact"
       className={`cef-status-badge cef-status-badge--${status}`}
-      data-testid={testId ? `${testId}-status` : 'cef-status'}
-      aria-live="polite"
-      aria-label={`Feed status: ${labels[status]}`}
-    >
-      <span className="cef-status-badge__dot" aria-hidden="true" />
-      {labels[status]}
-    </span>
+      testId={testId ? `${testId}-status` : 'cef-status'}
+      ariaLabel={`Feed status: ${labels[status]}`}
+      icon={<span className="cef-status-badge__dot" />}
+    />
   );
 };
 

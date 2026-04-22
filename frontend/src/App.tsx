@@ -2,6 +2,7 @@ import React, { Suspense, lazy, useCallback, useEffect, useRef } from 'react';
 import GameLobby from './pages/GameLobby';
 import { RouteErrorBoundary } from './components/v1/RouteErrorBoundary';
 import ProfileSettings from './pages/ProfileSettings';
+import Portfolio from './pages/Portfolio';
 import { I18nProvider, useI18n } from './i18n/provider';
 import LocaleSwitcher from './components/LocaleSwitcher';
 import Breadcrumbs from './components/BreadCrumbs';
@@ -220,7 +221,7 @@ function NotificationCenter(): React.JSX.Element | null {
 
 /* ───────────────── App Content ───────────────── */
 
-type AppRoute = 'lobby' | 'games' | 'profile';
+type AppRoute = 'lobby' | 'games' | 'portfolio' | 'profile';
 
 const AppContent: React.FC = () => {
   const { t } = useI18n();
@@ -246,6 +247,12 @@ const AppContent: React.FC = () => {
       description: 'Open the profile settings page',
       action: () => navigate('/profile'),
     },
+    {
+      id: 'go-portfolio',
+      label: 'Go to Portfolio',
+      description: 'Open wallet, rewards, and collectibles',
+      action: () => setRoute('portfolio'),
+    },
   ];
 
   return (
@@ -269,7 +276,17 @@ const AppContent: React.FC = () => {
 
         <main className="app-content" id="main-content">
           <RouteErrorBoundary>
-            {route === 'profile' ? <ProfileSettings /> : <GameLobby />}
+            {route === 'profile' ? (
+              <ProfileSettings />
+            ) : route === 'portfolio' ? (
+              <Portfolio
+                onOpenWallet={() => setRoute('profile')}
+                onBrowseRewards={() => setRoute('games')}
+                onBrowseCollectibles={() => setRoute('games')}
+              />
+            ) : (
+              <GameLobby />
+            )}
           </RouteErrorBoundary>
         </main>
 

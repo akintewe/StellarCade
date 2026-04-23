@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import { TxPhase, TxStatusMeta, TxStatusError } from '../../types/tx-status';
 import { EnvironmentBadge } from './EnvironmentBadge';
+import { StatusPill } from './StatusPill';
 import { formatAddress, formatDate, formatTxTimestamp, truncateHash } from '../../utils/v1/formatters';
 import { Timeline } from './Timeline';
 import type { TimelineItemData, TimelineItemStatus } from './Timeline';
@@ -224,6 +225,11 @@ export const TxStatusPanel: React.FC<TxStatusPanelProps> = ({
   ];
 
   const badgeClass = `tx-status-panel__badge tx-status-panel__badge--${phase.toLowerCase()}`;
+  const badgeTone =
+    phase === TxPhase.CONFIRMED ? 'success' :
+    phase === TxPhase.FAILED ? 'error' :
+    phase === TxPhase.SUBMITTED || phase === TxPhase.PENDING ? 'pending' :
+    'neutral';
 
   return (
     <div className={containerClasses} data-testid={testId}>
@@ -232,7 +238,14 @@ export const TxStatusPanel: React.FC<TxStatusPanelProps> = ({
           {isIdle ? 'Ready to Submit' : 'Transaction Status'}
         </span>
         <div className="tx-status-panel__header-badges">
-          <span className={badgeClass} data-testid={`${testId}-badge`}>{phase}</span>
+          <StatusPill
+            tone={badgeTone}
+            label={phase}
+            size="compact"
+            className={badgeClass}
+            testId={`${testId}-badge`}
+            ariaLabel={`Transaction phase: ${phase}`}
+          />
           {network && (
             <EnvironmentBadge environment={network} size="small" testId={`${testId}-env-badge`} />
           )}

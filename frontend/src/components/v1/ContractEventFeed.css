@@ -136,43 +136,13 @@
 }
 
 .cef-status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  padding: 2px 8px;
-  border-radius: 99px;
-  border: 1px solid transparent;
-}
-
-.cef-status-badge--connected {
-  border-color: rgba(74, 222, 128, 0.4);
-  color: var(--cef-accent);
-  background: var(--cef-accent-dim);
-}
-
-.cef-status-badge--disconnected {
-  border-color: rgba(248, 113, 113, 0.35);
-  color: var(--cef-error);
-  background: rgba(248, 113, 113, 0.08);
-}
-
-.cef-status-badge--reconnecting {
-  border-color: rgba(250, 204, 21, 0.35);
-  color: var(--cef-warn);
-  background: rgba(250, 204, 21, 0.08);
-}
-
-.cef-status-badge--idle {
-  border-color: var(--cef-border);
-  color: var(--cef-text-muted);
+  box-shadow: none;
 }
 
 .cef-status-badge__dot {
-  width: 6px;
-  height: 6px;
+  display: inline-flex;
+  width: 0.4rem;
+  height: 0.4rem;
   border-radius: 50%;
   background: currentColor;
   flex-shrink: 0;

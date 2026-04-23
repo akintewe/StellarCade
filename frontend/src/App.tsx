@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from 'react';
 import GameLobby from './pages/GameLobby';
 import { RouteErrorBoundary } from './components/v1/RouteErrorBoundary';
 import ProfileSettings from './pages/ProfileSettings';
+import Portfolio from './pages/Portfolio';
 import { I18nProvider, useI18n } from './i18n/provider';
 import LocaleSwitcher from './components/LocaleSwitcher';
 import Breadcrumbs from './components/BreadCrumbs';
@@ -115,7 +116,7 @@ function NotificationCenter(): React.JSX.Element | null {
 
 /* ───────────────── App Content ───────────────── */
 
-type AppRoute = 'lobby' | 'games' | 'profile';
+type AppRoute = 'lobby' | 'games' | 'portfolio' | 'profile';
 
 const AppContent: React.FC = () => {
   const { t } = useI18n();
@@ -140,6 +141,12 @@ const AppContent: React.FC = () => {
       label: 'Go to Profile Settings',
       description: 'Open the profile settings page',
       action: () => navigate('/profile'),
+    },
+    {
+      id: 'go-portfolio',
+      label: 'Go to Portfolio',
+      description: 'Open wallet, rewards, and collectibles',
+      action: () => setRoute('portfolio'),
     },
   ];
 
@@ -175,7 +182,17 @@ const AppContent: React.FC = () => {
 
         <main className="app-content" id={MAIN_CONTENT_ID} tabIndex={-1}>
           <RouteErrorBoundary>
-            {route === 'profile' ? <ProfileSettings /> : <GameLobby />}
+            {route === 'profile' ? (
+              <ProfileSettings />
+            ) : route === 'portfolio' ? (
+              <Portfolio
+                onOpenWallet={() => setRoute('profile')}
+                onBrowseRewards={() => setRoute('games')}
+                onBrowseCollectibles={() => setRoute('games')}
+              />
+            ) : (
+              <GameLobby />
+            )}
           </RouteErrorBoundary>
         </main>
 
@@ -219,4 +236,3 @@ const App: React.FC = () => {
 export { Drawer } from './components/v1/Drawer';
 
 export default App;
-

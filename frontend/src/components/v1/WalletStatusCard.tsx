@@ -11,8 +11,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { SkeletonBase } from './LoadingSkeletonSet';
 import { EnvironmentBadge } from './EnvironmentBadge';
+import { StatusPill } from './StatusPill';
 import {
   BADGE_VARIANT_MAP,
+  BADGE_TONE_MAP,
   STATUS_LABEL_MAP,
   type WalletStatusCardProps,
   type WalletBadgeVariant,
@@ -206,14 +208,15 @@ function DroppedSessionBanner({
 
 function StatusBadge({ variant, label }: StatusBadgeProps): React.JSX.Element {
   return (
-    <span
+    <StatusPill
+      tone={BADGE_TONE_MAP[variant]}
+      label={label}
+      size="compact"
+      testId="wallet-status-badge"
+      ariaLabel={`Wallet status: ${label}`}
+      icon={<span className="wallet-status-card__badge-dot" />}
       className={`wallet-status-card__badge wallet-status-card__badge--${variant}`}
-      data-testid="wallet-status-badge"
-      aria-label={`Wallet status: ${label}`}
-    >
-      <span className="wallet-status-card__badge-dot" aria-hidden="true" />
-      {label}
-    </span>
+    />
   );
 }
 

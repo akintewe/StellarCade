@@ -12,14 +12,24 @@ exports[`WalletStatusCard > Snapshots > matches snapshot for connected state 1`]
   >
     <span
       aria-label="Wallet status: Connected"
-      class="wallet-status-card__badge wallet-status-card__badge--connected"
+      class="status-pill status-pill--success status-pill--compact wallet-status-card__badge wallet-status-card__badge--connected"
       data-testid="wallet-status-badge"
+      data-tone="success"
+      role="status"
     >
       <span
         aria-hidden="true"
-        class="wallet-status-card__badge-dot"
-      />
-      Connected
+        class="status-pill__icon"
+      >
+        <span
+          class="wallet-status-card__badge-dot"
+        />
+      </span>
+      <span
+        class="status-pill__label"
+      >
+        Connected
+      </span>
     </span>
     <div
       class="wallet-status-card__provider"
@@ -111,14 +121,24 @@ exports[`WalletStatusCard > Snapshots > matches snapshot for disconnected state 
   >
     <span
       aria-label="Wallet status: Disconnected"
-      class="wallet-status-card__badge wallet-status-card__badge--disconnected"
+      class="status-pill status-pill--neutral status-pill--compact wallet-status-card__badge wallet-status-card__badge--disconnected"
       data-testid="wallet-status-badge"
+      data-tone="neutral"
+      role="status"
     >
       <span
         aria-hidden="true"
-        class="wallet-status-card__badge-dot"
-      />
-      Disconnected
+        class="status-pill__icon"
+      >
+        <span
+          class="wallet-status-card__badge-dot"
+        />
+      </span>
+      <span
+        class="status-pill__label"
+      >
+        Disconnected
+      </span>
     </span>
   </div>
   <div

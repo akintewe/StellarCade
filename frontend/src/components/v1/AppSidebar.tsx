@@ -1,7 +1,7 @@
 import React from 'react';
 import './AppSidebar.css';
 
-export type AppRoute = 'lobby' | 'games' | 'profile';
+export type AppRoute = 'lobby' | 'games' | 'portfolio' | 'profile';
 
 interface SidebarItem {
   route: AppRoute;
@@ -31,7 +31,10 @@ const sections: SidebarSection[] = [
   {
     id: 'account',
     title: 'Account',
-    items: [{ route: 'profile', label: 'Profile' }],
+    items: [
+      { route: 'portfolio', label: 'Portfolio' },
+      { route: 'profile', label: 'Profile' },
+    ],
   },
 ];
 

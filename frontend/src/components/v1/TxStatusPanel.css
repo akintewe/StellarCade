@@ -31,19 +31,9 @@
 }
 
 .tx-status-panel__badge {
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
-
-.tx-status-panel__badge--idle { background: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.6); }
-.tx-status-panel__badge--submitted { background: rgba(52, 152, 219, 0.2); color: #3498db; }
-.tx-status-panel__badge--pending { background: rgba(241, 196, 15, 0.2); color: #f1c40f; }
-.tx-status-panel__badge--confirmed { background: rgba(46, 204, 113, 0.2); color: #2ecc71; }
-.tx-status-panel__badge--failed { background: rgba(231, 76, 60, 0.2); color: #e74c3c; }
 
 /* Timeline */
 .tx-status-panel__timeline {

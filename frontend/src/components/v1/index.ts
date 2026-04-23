@@ -58,6 +58,16 @@ export type {
   WalletStatusError,
 } from "./WalletStatusCard.types";
 
+export {
+  StatusPill,
+  default as StatusPillDefault,
+} from "./StatusPill";
+export type {
+  StatusPillProps,
+  StatusPillTone,
+  StatusPillSize,
+} from "./StatusPill";
+
 export { AsyncStateBoundary } from "./AsyncStateBoundary";
 export type { AsyncStateBoundaryProps } from "./AsyncStateBoundary";
 

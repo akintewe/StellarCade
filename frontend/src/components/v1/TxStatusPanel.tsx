@@ -158,7 +158,6 @@ export const TxStatusPanel: React.FC<TxStatusPanelProps> = ({
   const { state: copyState, copy: triggerCopy } = useCopyFeedback();
 
   const isFailed = phase === TxPhase.FAILED;
-  const isPending = phase === TxPhase.PENDING || phase === TxPhase.SUBMITTED;
   const isIdle = phase === TxPhase.IDLE;
 
   const handleCopy = useCallback(async () => {
